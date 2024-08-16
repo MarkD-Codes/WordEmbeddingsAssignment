@@ -7,36 +7,22 @@ import java.util.Scanner;
 public class Menu {
 	private Scanner s;
 	private boolean keepRunning = true;
+	private int matchesToReturn = 10;
+	public String textToSearch = "";
 	
 	public Menu() {
 		s = new Scanner(System.in);
 	}
 	
-	public void start() {
-		while(keepRunning) {
-			showOptions();
-			
-			int choice = Integer.parseInt(s.next()); //Allow user to select menu option by inputting number
-			switch (choice) {
-			case 1 -> specifyEmbeddingFile(); 
-			case 2 -> outputFile();
-			case 3 -> textToAnalyse();
-			case 4 -> configOptions();
-			case 5 -> keepRunning = false;
-			default -> out.println("[Error] Invalid Selection");
-			}
-		}
-		out.println("[INFO] Exiting...Bye!");
-		
-		
-	}
 	
+	
+	//User can set embedding file 
 	private void specifyEmbeddingFile () {
 		
 		out.println("Specify Embedding file>");
 	}
 	
-	
+	//Path to write output to
 	private void outputFile() {
 		
 		out.println("Specify Output file name>");
@@ -44,19 +30,26 @@ public class Menu {
 	}
 	
 	
-	private void textToAnalyse() {
+	private void textAnalysis() {
 		
-		out.println("Enter the word or text you wish to analyse>");
+		out.println("Enter the word or text you want to perform the similarity search on>");
+		textToSearch = s.next();
+		SimilaritySearcher ss = new SimilaritySearcher();
 		
+		ss.similaritySearch(textToSearch, matchesToReturn);
+	
 	}
 	
+	//Default matches shown is 10
 	private void setMatchNumber() {
-		
-		out.println("The Report Will Show You The Top" + "X " + "Matches");
+		out.println("Set the number of top matches you want shown in the report (default is 10) > ");
+		matchesToReturn = s.nextInt();
+		out.println("The Report Will Show You The Top " + matchesToReturn + "Matches");
 		configOptions();
 		
 	}
 	
+	//Default TBD
 private void setAnalysisMethod() {
 		
 		out.println("You Have Selected to Analyse the Text Using the Method " + "Method Name");
@@ -97,10 +90,30 @@ private void backToMainMenu() {
 		System.out.println("************************************************************");
 		System.out.println("(1) Specify Embedding File");
 		System.out.println("(2) Specify an Output File (default: ./out.txt)");
-		System.out.println("(3) Enter a Word or Text");
+		System.out.println("(3) Enter a Word or Text and Run the Similarity Search");
 		System.out.println("(4) Configure Options");
 		System.out.println("(5) Quit");
 	
 	}
+	
+	public void start() {
+		while(keepRunning) {
+			showOptions();
+			
+			int choice = Integer.parseInt(s.next()); //Allow user to select menu option by inputting number
+			switch (choice) {
+			case 1 -> specifyEmbeddingFile(); 
+			case 2 -> outputFile();
+			case 3 -> textAnalysis();
+			case 4 -> configOptions();
+			case 5 -> keepRunning = false;
+			default -> out.println("[Error] Invalid Selection");
+			}
+		}
+		out.println("[INFO] Exiting...Bye!");
+		
+		
+	}
+
 
 }
