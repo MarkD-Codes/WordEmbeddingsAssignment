@@ -2,13 +2,16 @@ package ie.atu.sw;
 
 import static java.lang.System.*;
 import java.util.Scanner;
-
+import java.io.*;
 
 public class Menu {
 	private Scanner s;
 	private boolean keepRunning = true;
 	private int matchesToReturn = 10;
-	public String textToSearch = "";
+	private String textToSearch = "";
+	private String embeddingFile = "./word-embeddings.txt";
+	private String outputFile = "result.txt";
+	
 	
 	public Menu() {
 		s = new Scanner(System.in);
@@ -19,13 +22,14 @@ public class Menu {
 	//User can set embedding file 
 	private void specifyEmbeddingFile () {
 		
-		out.println("Specify Embedding file>");
+		out.println("Specify Embeddings file>");
 	}
 	
 	//Path to write output to
-	private void outputFile() {
+	private void specifyOutputFile() {
 		
 		out.println("Specify Output file name>");
+		
 		
 	}
 	
@@ -34,9 +38,45 @@ public class Menu {
 		
 		out.println("Enter the word or text you want to perform the similarity search on>");
 		textToSearch = s.next();
-		SimilaritySearcher ss = new SimilaritySearcher();
 		
-		ss.similaritySearch(textToSearch, matchesToReturn);
+		SimilaritySearcher ss = new SimilaritySearcher();
+		try {
+			FileWriter output = new FileWriter(outputFile);
+			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(embeddingFile)));
+		    //modified code from ElegyProcessor to take in file
+			
+			String line = null;	
+		    for (int i=0; i<= matchesToReturn; i++) {
+		    	line = br.readLine();
+		    	output.write(line + "\n");
+		    	
+		    	/*
+		    	 * now can read the embedding file, line by line...and outputs a result to a .txt file
+		    	 * just need to write loop that will go line by line and parse each line into two arrays
+		    	 * BUT I need to put all these methods into SimilaritySearcher class
+		    	 */
+		    	
+		    	
+		    }
+		    
+		    /*
+		     * TODO Write method to parse file into two arrays
+		     * TODO Write method(s) to perform operations on embedding 
+		     * 
+		     */
+			
+		    output.write(ss.toString());
+		    
+			br.close();
+			output.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		ss.similaritySearch(textToSearch, matchesToReturn, embeddingFile);
+		
+		
 	
 	}
 	
@@ -96,14 +136,18 @@ private void backToMainMenu() {
 	
 	}
 	
+	//TODO : Write method so file is parsed and loaded into two arrays on start up- or better to do after option 3 is selected? 
+	//New class called "BuildArrays" needed?
+	
 	public void start() {
+		
 		while(keepRunning) {
 			showOptions();
 			
 			int choice = Integer.parseInt(s.next()); //Allow user to select menu option by inputting number
 			switch (choice) {
 			case 1 -> specifyEmbeddingFile(); 
-			case 2 -> outputFile();
+			case 2 -> specifyOutputFile();
 			case 3 -> textAnalysis();
 			case 4 -> configOptions();
 			case 5 -> keepRunning = false;
