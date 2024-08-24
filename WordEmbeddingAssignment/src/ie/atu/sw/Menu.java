@@ -67,11 +67,30 @@ public class Menu {
 		
 	}
 	
-	//Default TBD
-private void setAnalysisMethod() {
+	
+	private void setAnalysisMethod() {
+		out.println("**************************************");
+		out.println("********Select Analysis Method********");
+		out.println("**************************************");
+		out.println("(1) Dot Product Search (Default)");
+		out.println("(2) Cosine Distance Search");
+		out.println("(3) Back to Options Menu");
 		
-		out.println("You Have Selected to Analyse the Text Using the Method " + "Method Name");
-		configOptions();
+		int choice = Integer.parseInt(s.next());
+		switch (choice) {
+		case 1 -> {calculatorChoice = 1; 
+				out.println("You have set Analysis Method to Dot Product");
+				configOptions();
+				}
+		case 2 -> {calculatorChoice = 2; 
+				out.println("You have set Analysis Method to Cosine Distance");
+				configOptions();
+				}
+		case 3 -> configOptions();
+		default -> {out.println("[Error] Invalid Selection");
+					setAnalysisMethod();
+					}
+			}		
 		
 	}
 
@@ -93,7 +112,9 @@ private void backToMainMenu() {
 		case 1 -> setMatchNumber(); 
 		case 2 -> setAnalysisMethod();
 		case 3 -> backToMainMenu();
-		default -> out.println("[Error] Invalid Selection");
+		default -> {out.println("[Error] Invalid Selection");
+					configOptions();
+						}
 		}
 	}
 	

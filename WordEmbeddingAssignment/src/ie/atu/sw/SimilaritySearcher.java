@@ -5,6 +5,7 @@ import static java.lang.System.out;
 import java.io.*;
 import java.lang.*;
 import java.util.Arrays;
+import java.math.*;
 
 public class SimilaritySearcher {
 
@@ -124,11 +125,30 @@ public class SimilaritySearcher {
 		return sum;
 	}
 	
+	//calculates similarity using cosine distance score 
+	private double cosineDistanceCalculator(double[] da1, double[] da2) {
+		double distance = 0;
+		double sumOfSquaresDa1 = 0;
+		double sumOfSquaresDa2 = 0;
+		double dotProduct = dotProductCalculator(da1, da2);
+		for(int i = 0; i <= da1.length-1; i++) {
+			double j = (da1[i]*da1[i]);
+			sumOfSquaresDa1 = sumOfSquaresDa1+ j; 
+			
+			double k = (da2[i]*da2[i]);
+			sumOfSquaresDa2 = sumOfSquaresDa2+ k; 
+		}
+		
+		distance = dotProduct/(Math.sqrt((sumOfSquaresDa1)*(sumOfSquaresDa2)));
+		return distance;
+		
+	}
+	
 	private double similarityScoreGenerator(double[] da1, double[] da2, int calculatorChoice) {
 		
 		return switch(calculatorChoice) {
 		case 1 -> dotProductCalculator(da1, da2);
-		
+		case 2 -> cosineDistanceCalculator(da1, da2);
 		default -> dotProductCalculator(da1, da2);
 		};
 		
@@ -158,6 +178,24 @@ public class SimilaritySearcher {
 	}
 	
 	
+	private int findIndexOfMax(double[] arr) {
+	        if (arr == null || arr.length == 0) {
+	            return -1; // Return -1 if the array is empty
+	        }
+	        int maxIndex = 0;
+	        double maxValue = arr[0];
+
+	        for (int i = 1; i < arr.length; i++) {
+	            if (arr[i] > maxValue) {
+	                maxValue = arr[i];
+	                maxIndex = i;
+	            }
+	        }
+	        return maxIndex;
+	    }
+	
+	
+
 	
 	public void similaritySearch (String textToSearch, int matchesToReturn, int calculatorChoice, String gloveFile, String outputFile) {		
 		
@@ -172,9 +210,12 @@ public class SimilaritySearcher {
 				out.println("Your file " + outputFile + " has been generated. It contains " + matchesToReturn + " ranked results of words "
 						+ "similar to the word: " + textToSearch);
 				similarityScoresArray = similarityScoreArrayGenerator(embeddingsArray, FEATURES_NUMBER, wordIndex, calculatorChoice);
+				int indexOfMax = findIndexOfMax(similarityScoresArray);
 				
+				//TESTING BLOCKS
 				output.write(Arrays.toString(similarityScoresArray));
-				
+				//System.out.println(wordsArray[indexOfMax]);
+				//System.out.println(similarityScoresArray[indexOfMax]);
 			
 			}else if (wordIndex == -1) out.println("Word not found. Please try another word!");
 			
