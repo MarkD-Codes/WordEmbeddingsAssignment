@@ -4,6 +4,7 @@ import static java.lang.System.out;
 
 import java.io.*;
 import java.lang.*;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.math.*;
 
@@ -177,29 +178,41 @@ public class SimilaritySearcher {
 		return da2;
 	}
 	
-	
-	private int findIndexOfMax(double[] arr) {
+	//Array iterative search for max element found at https://www.geeksforgeeks.org/program-to-find-largest-element-in-an-array/
+	private int findIndexOfTopMatch(double[] arr) {
 	        if (arr == null || arr.length == 0) {
 	            return -1; // Return -1 if the array is empty
 	        }
-	        int maxIndex = 0;
+	        int indexOfTopMatch = 0;
 	        double maxValue = arr[0];
 
 	        for (int i = 1; i < arr.length; i++) {
 	            if (arr[i] > maxValue) {
 	                maxValue = arr[i];
-	                maxIndex = i;
+	                indexOfTopMatch = i;
 	            }
 	        }
-	        return maxIndex;
-	    }
+	        return indexOfTopMatch;
+	}
+	
+	private int[] topResultsFinder(double[] arr, int matchesToReturn) {
+		double[] tempArray = arr.clone();
+		int indexOfTopMatch = 0;
+		int[] topResultsIndices = new int[matchesToReturn + 1];
+		
+		for (int i = 0; i <= matchesToReturn-1; i++) {
+			indexOfTopMatch = findIndexOfTopMatch(tempArray);
+			topResultsIndices[i] = indexOfTopMatch; 
+			tempArray[indexOfTopMatch] = 0.00;
+		}
+		
+		return topResultsIndices;
+	}
 	
 	
-
 	
 	public void similaritySearch (String textToSearch, int matchesToReturn, int calculatorChoice, String gloveFile, String outputFile) {		
 		
-		String[] topMatches = new String[matchesToReturn];
 		double[] similarityScoresArray = new double[EMBEDDINGS_NUMBER];
 		
 		try {
@@ -210,19 +223,20 @@ public class SimilaritySearcher {
 				out.println("Your file " + outputFile + " has been generated. It contains " + matchesToReturn + " ranked results of words "
 						+ "similar to the word: " + textToSearch);
 				similarityScoresArray = similarityScoreArrayGenerator(embeddingsArray, FEATURES_NUMBER, wordIndex, calculatorChoice);
-				int indexOfMax = findIndexOfMax(similarityScoresArray);
+				int[] topMatchesIndexArray = topResultsFinder(similarityScoresArray, matchesToReturn);
+				output.write("Text Entered: " + textToSearch + "\n" + "\n" + "Similarity Search Results " + "\n" + "\n");
 				
-				//TESTING BLOCKS
-				output.write(Arrays.toString(similarityScoresArray));
+				
+				for(int i=1; i <= matchesToReturn; i++) {
+					double d = (similarityScoresArray[topMatchesIndexArray[i]]);
+					String s = Double.toString(d);
+					output.write("Match number " + (i) + "        " + wordsArray[topMatchesIndexArray[i]] + "        " + s  + "\n");
+					}
 				//System.out.println(wordsArray[indexOfMax]);
 				//System.out.println(similarityScoresArray[indexOfMax]);
 			
 			}else if (wordIndex == -1) out.println("Word not found. Please try another word!");
-			
-			
-			//TODO Method to perform calculation between two embeddings
-			//TODO Method to loop through embeddingsArray casting toDouble and calculating
-			
+						
 			output.close();
 			
 		} catch (IOException e) {
